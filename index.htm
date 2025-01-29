@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,15 +45,12 @@
                 return;
             }
             
-            fetch('https://hooks.zapier.com/hooks/catch/12793543/2frp0k7/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ color: color })
+            const url = `https://hooks.zapier.com/hooks/catch/12793543/2frp0k7/?color=${encodeURIComponent(color)}`;
+            
+            fetch(url, {
+                method: 'GET'
             })
-            .then(response => response.json())
-            .then(data => alert('Color sent successfully!'))
+            .then(response => alert('Color sent successfully!'))
             .catch(error => alert('Error sending color'));
         }
     </script>
