@@ -1,1 +1,62 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #colorPicker {
+            margin: 20px;
+        }
+        #hexCode {
+            width: 150px;
+            padding: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pick a Color</h1>
+    <input type="color" id="colorPicker" onchange="setColor(this.value)">
+    <br>
+    <input type="text" id="hexCode" readonly>
+    <button onclick="sendColor()">Set Color</button>
+    
+    <script>
+        function setColor(color) {
+            document.getElementById('hexCode').value = color;
+        }
+
+        function sendColor() {
+            const color = document.getElementById('hexCode').value;
+            if (!color) {
+                alert('Please select a color first!');
+                return;
+            }
+            
+            fetch('https://hooks.zapier.com/hooks/catch/12793543/2frp0k7/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ color: color })
+            })
+            .then(response => response.json())
+            .then(data => alert('Color sent successfully!'))
+            .catch(error => alert('Error sending color'));
+        }
+    </script>
+</body>
+</html>
