@@ -38,20 +38,38 @@
             document.getElementById('hexCode').value = color;
         }
 
-        function sendColor() {
+        async function sendColor() {
             const color = document.getElementById('hexCode').value;
             if (!color) {
                 alert('Please select a color first!');
                 return;
             }
-            
-            const url = `https://hooks.zapier.com/hooks/catch/12793543/2frp0k7/?color=${encodeURIComponent(color)}`;
-            
-            fetch(url, {
-                method: 'GET'
-            })
-            .then(response => alert('Color sent successfully!'))
-            .catch(error => alert('Error sending color'));
+
+            const url = "https://sheets.googleapis.com/v4/spreadsheets/1MP1b00Y5B4JgJqB6FI33HI_3mG459xMXpTJZ0HjD_xg/values/A1?valueInputOption=RAW";
+
+            const data = {
+                values: [[color]]
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": "Bearer ya29.a0AXeO80Tpl9HlJEon956eblg4-LJCrXRq71S9WEh2HI3a0SoeHleVrthdid-RCBd3lO1i6HpbENbiYfY6phDxAaHl8wrVzQPYPTR3OFKh8Hj7lMPjDaQkRPwSrYIE_XXzUlSVcqyC0LiS6A1hyD5PGG3i40YrTWPNbCfZ46uFaCgYKAY8SARASFQHGX2MiVGMPeTEoowPw3L1RNVLQvg0175",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert("Color sent to Google Sheets successfully!");
+                } else {
+                    const errorData = await response.json();
+                    alert("Error: " + JSON.stringify(errorData));
+                }
+            } catch (error) {
+                alert("Request failed: " + error.message);
+            }
         }
     </script>
 </body>
