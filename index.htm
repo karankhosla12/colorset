@@ -28,51 +28,15 @@
 </head>
 <body>
     <h1>Pick a Color</h1>
-    <button onclick="getAccessToken()">Login & Get Token</button>
-    <br><br>
     <input type="color" id="colorPicker" onchange="setColor(this.value)">
     <br>
     <input type="text" id="hexCode" readonly>
     <button onclick="sendColor()">Set Color</button>
 
     <script>
-        const CLIENT_ID = "791575004205-uciv1nka0rla52ct3hmo3an4pg31sf1n.apps.googleusercontent.com";
-        const CLIENT_SECRET = "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";
-        const REDIRECT_URI = "http://localhost:5500"; // Change this if needed
-        const SHEET_ID = "1MP1b00Y5B4JgJqB6FI33HI_3mG459xMXpTJZ0HjD_xg";
-        let accessToken = "";
-
-        async function getAccessToken() {
-            const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=https://www.googleapis.com/auth/spreadsheets&access_type=offline`;
-
-            window.location.href = authUrl;
-        }
-
-        async function exchangeCodeForToken(authCode) {
-            const tokenUrl = "https://oauth2.googleapis.com/token";
-            const data = {
-                code: authCode,
-                client_id: CLIENT_ID,
-                client_secret: CLIENT_SECRET,
-                redirect_uri: REDIRECT_URI,
-                grant_type: "authorization_code"
-            };
-
-            const response = await fetch(tokenUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams(data)
-            });
-
-            const result = await response.json();
-            accessToken = result.access_token;
-
-            if (accessToken) {
-                alert("Access token received!");
-            } else {
-                alert("Failed to get access token!");
-            }
-        }
+        const ACCESS_TOKEN = "ya29.a0AXeO80Tpl9HlJEon956eblg4-LJCrXRq71S9WEh2HI3a0SoeHleVrthdid-RCBd3lO1i6HpbENbiYfY6phDxAaHl8wrVzQPYPTR3OFKh8Hj7lMPjDaQkRPwSrYIE_XXzUlSVcqyC0LiS6A1hyD5PGG3i40YrTWPNbCfZ46uFaCgYKAY8SARASFQHGX2MiVGMPeTEoowPw3L1RNVLQvg0175"; // Your access token (EXPOSED)
+        const SHEET_ID = "1MP1b00Y5B4JgJqB6FI33HI_3mG459xMXpTJZ0HjD_xg"; // Your Google Sheet ID
+        const SHEET_RANGE = "A1"; // Cell where the color will be stored
 
         function setColor(color) {
             document.getElementById('hexCode').value = color;
@@ -85,20 +49,17 @@
                 return;
             }
 
-            if (!accessToken) {
-                alert("You must log in first!");
-                return;
-            }
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_RANGE}?valueInputOption=RAW`;
 
-            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/A1?valueInputOption=RAW`;
-
-            const data = { values: [[color]] };
+            const data = {
+                values: [[color]]
+            };
 
             try {
                 const response = await fetch(url, {
                     method: "PUT",
                     headers: {
-                        "Authorization": `Bearer ${accessToken}`,
+                        "Authorization": `Bearer ${ACCESS_TOKEN}`,
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify(data)
@@ -114,17 +75,6 @@
                 alert("Request failed: " + error.message);
             }
         }
-
-        function checkForAuthCode() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const authCode = urlParams.get("code");
-
-            if (authCode) {
-                exchangeCodeForToken(authCode);
-            }
-        }
-
-        checkForAuthCode();
     </script>
 </body>
 </html>
